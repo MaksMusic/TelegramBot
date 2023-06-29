@@ -41,18 +41,28 @@ public class Main extends TelegramLongPollingBot {
         SendMessage response = new SendMessage();
         response.setChatId(message.getChatId());
         String answer = responseMessages.response(message.getText());
-        System.out.println(answer);
+
         try {
             response.setText(answer);
         }catch (NullPointerException e){
             response.setText("Ваша заявка обрабатывается ожидайте ответа");
         }
 
+
         try {
             execute(response);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+
+        try {
+            response.setText(responseMessages.responseMenu());
+            execute(response);
+        }catch (TelegramApiException e){
+            e.printStackTrace();
+        }
+
+
     }
 
 

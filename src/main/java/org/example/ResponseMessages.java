@@ -5,14 +5,26 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResponseMessages {
-    private File file = new File("C:\\Users\\Admin\\IdeaProjects\\TelegramBot\\src\\main\\resources\\Hello.txt");
+    private File fileHello = new File("C:\\Users\\Admin\\IdeaProjects\\TelegramBot\\src\\main\\resources\\Hello.txt");
+    private File fileMenu = new File("C:\\Users\\Admin\\IdeaProjects\\TelegramBot\\src\\main\\resources\\Menu.txt");
 
+    public String responseMenu(){
+        String menu = "";
+        try {
+          menu += Files.readAllLines(fileMenu.toPath()).stream().map(String::trim).collect(Collectors.joining("\n"));
+          return menu;
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public String response(String text) {
         try {
-            List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(fileHello.toPath(), StandardCharsets.UTF_8);
             for (String line : lines) {
                 String[] words = line.split(",");
                 for (String word : words) {
