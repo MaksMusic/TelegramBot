@@ -1,4 +1,4 @@
-package org.example;
+package org.example.servise;
 
 import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;

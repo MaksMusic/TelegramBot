@@ -1,25 +1,22 @@
+package org.example.main;
 
-import org.example.ResponseMessages;
-import org.example.UpdatePhotoAvatar;
+import org.example.loggi.Logger;
+import org.example.servise.ResponseManager;
+import org.example.servise.UpdatePhotoAvatar;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 public class Main extends TelegramLongPollingBot {
-    private ResponseMessages responseMessages = new ResponseMessages();
+    private ResponseManager responseManager = new ResponseManager();
+    private Logger logger = new Logger();
 
-    static String TOKEN = "6015181556:AAEfV-g5MuVVooWEMBU4oG9HRPQLa_D3JbM";
-    static String NAME = "Java_city_bot";
+    private static final String TOKEN = "6015181556:AAEfV-g5MuVVooWEMBU4oG9HRPQLa_D3JbM";
+    private static final String NAME = "Java_city_bot";
 
     @Override
     public String getBotToken() {
@@ -40,29 +37,40 @@ public class Main extends TelegramLongPollingBot {
     private void responseSend(Message message){
         SendMessage response = new SendMessage();
         response.setChatId(message.getChatId());
-        String answer = responseMessages.response(message.getText());
+        response.setText(message.getText());
 
+        //логирование запроса
+        logger.printRequestInformationToLogger(message);
+
+        //получить ответ на запрос
+        String textResponse = responseManager.getResponse(message);
+
+        //ответ пользователю который сделал запрос
+        replayToRequest(response, textResponse);
+
+
+    }
+
+
+
+    private static void sleep(long s) {
         try {
-            response.setText(answer);
-        }catch (NullPointerException e){
-            response.setText("Ваша заявка обрабатывается ожидайте ответа");
+            Thread.sleep(s);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+    }
 
-
+    private void replayToRequest(SendMessage response, String text) {
         try {
+            //присвоить текст в ответ
+            response.setText(text);
+            //отправить
             execute(response);
+
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-
-        try {
-            response.setText(responseMessages.responseMenu());
-            execute(response);
-        }catch (TelegramApiException e){
-            e.printStackTrace();
-        }
-
-
     }
 
 
