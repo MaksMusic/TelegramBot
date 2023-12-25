@@ -5,15 +5,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public  class Main {
+    private static final String TOKEN = "6015181556:AAEfV-g5MuVVooWEMBU4oG9HRPQLa_D3JbM";
     public static void main(String[] args) {
 
-        System.out.println("start");
         try {
             // Создание объекта TelegramBotsApi для взаимодействия с Telegram API, используя сеанс по умолчанию (DefaultBotSession)
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 
-            // Создание экземпляра класса Main, который предположительно реализует функциональность вашего бота
-            Bot botBot = new Bot();
+            // Создание Бота который реализует функциональность  бота
+            Bot botBot = new Bot(TOKEN);
 
             // Регистрация созданного бота (mainBot) в Telegram с использованием TelegramBotsApi
             telegramBotsApi.registerBot(botBot);

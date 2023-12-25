@@ -17,7 +17,7 @@ public class SessionUser {
     private List<String> requestMessage = new ArrayList<>();
 
 
-    public List<String> getRequestMessage() {
+    public List<String> getRequestMessages() {
         return requestMessage;
     }
 

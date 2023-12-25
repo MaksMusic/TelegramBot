@@ -1,27 +1,24 @@
 package org.example.main;
 
 import org.example.loggi.Logger;
-import org.example.servise.ResponseManager;
-import org.example.servise.UpdatePhotoAvatar;
+import org.example.servise.RequestManager;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Bot extends TelegramLongPollingBot {
-    private ResponseManager responseManager = new ResponseManager();
+
+    public Bot(String botToken) {
+        super(botToken);
+    }
+
+    private RequestManager requestManager = new RequestManager();
     private Logger logger = new Logger();
 
     private static final String TOKEN = "6015181556:AAEfV-g5MuVVooWEMBU4oG9HRPQLa_D3JbM";
     private static final String NAME = "Java_city_bot";
-
-    @Override
-    public String getBotToken() {
-        return TOKEN;
-    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -34,38 +31,31 @@ public class Bot extends TelegramLongPollingBot {
     }
 
 
-    private void responseSend(Message message) {
+    private void responseSend(Message messageRequest) {
+
         SendMessage response = new SendMessage();
-        response.setChatId(message.getChatId());
-        response.setText(message.getText());
+        response.setChatId(messageRequest.getChatId());
+        response.setText(messageRequest.getText());
 
         //логирование запроса
-        logger.printRequestInformationToLogger(message);
+        logger.printRequestInformationToLogger(messageRequest);
 
         //получить ответ на запрос
-        String textResponse = responseManager.getResponse(message);
+        String textResponse = requestManager.getResponse(messageRequest);
 
         //ответ пользователю который сделал запрос
-        replayToRequest(response, textResponse);
+        send(response, textResponse);
 
 
     }
 
 
-    private static void sleep(long s) {
-        try {
-            Thread.sleep(s);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void replayToRequest(SendMessage response, String text) {
+    private void send(SendMessage sendMessage, String text) {
         try {
             //присвоить текст в ответ
-            response.setText(text);
+            sendMessage.setText(text);
             //отправить
-            execute(response);
+            execute(sendMessage);
 
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -76,14 +66,5 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return NAME;
-    }
-
-    private void updateAvatar(Bot botBot) {
-        try {
-            UpdatePhotoAvatar updatePhotoAvatar = new UpdatePhotoAvatar();
-            execute(updatePhotoAvatar.setPhotoAvatar());
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 }
